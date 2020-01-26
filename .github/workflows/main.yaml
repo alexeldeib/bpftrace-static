@@ -26,5 +26,5 @@ jobs:
                 docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
                 TAG=$(date -Ihours | tr :+ -)
                 echo "TAG: ${TAG}"
-                docker build --build-arg distro=${{ matrix.distro }} --build-arg LLVM_VERSION=${{ matrix.llvm }} -t  ${DOCKER_USER}/bpftrace-bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
+                docker build --build-arg distro=${{ matrix.distro }} --build-arg LLVM_VERSION=${{ matrix.llvm }} -t  ${DOCKER_USER}/bpftrace-bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} .
                 docker push ${DOCKER_USER}/bpftrace-bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
