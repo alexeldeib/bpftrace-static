@@ -30,3 +30,8 @@ jobs:
                 echo "TAG: ${TAG}"
                 docker build --build-arg distro=${{ matrix.distro }} --build-arg LLVM_VERSION=${{ matrix.llvm }} -t  ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} .
                 docker push ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
+                docker run -it --rm -v $(GITHUB_WORKSPACE):$(GITHUB_WORKSPACE) ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} cp /usr/local/bin/bpftrace $(GITHUB_WORKSPACE)/bpftrace
+            - uses: actions/upload-artifact@v1
+              with:
+                name: ${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}
+                path: ${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}
