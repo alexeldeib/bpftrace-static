@@ -63,7 +63,7 @@ RUN git clone https://github.com/iovisor/bcc.git \
     cp src/cc/libbcc-loader-static.a /usr/local/lib/libbcc-loader-static.a && \
     cp ./src/cc/libbcc_bpf.a /usr/local/lib/libbpf.a
 
-RUN git clone https://github.com/alexeldeib/bpftrace.git \
+RUN git clone https://github.com/iovisor/bpftrace.git \
     && mkdir bpftrace/build; cd bpftrace/build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DWARNINGS_AS_ERRORS:BOOL=OFF \
       -DSTATIC_LINKING:BOOL=ON -DSTATIC_LIBC:BOOL=OFF \
@@ -75,3 +75,14 @@ RUN git clone https://github.com/alexeldeib/bpftrace.git \
     && make -j$(nproc) embedded_clang \
     && make -j$(nproc) \
     && make install
+
+RUN strip --keep-symbol BEGIN_trigger
+
+# at end of build, expect:
+# /usr/local/bin/bpftrace contains static binary
+# /usr/local/share/bpftrace/tools contains bpftrace shared programs
+# /usr/local/share/bcc/tools contains bcc shared programs
+# and some bcc lib*.a
+# /usr/local/lib/libbcc.a
+# /usr/local/lib/libbcc-loader-static.a
+# /usr/local/lib/libbpf.a
