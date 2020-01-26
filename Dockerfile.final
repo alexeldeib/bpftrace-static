@@ -1,0 +1,13 @@
+ARG IMG
+ARG TAG
+
+FROM ${IMG}:${TAG} as builder
+
+FROM ubuntu:xenial as final
+
+COPY --from=builder /usr/local/bin/bpftrace /usr/local/bin/bpftrace
+COPY --from=builder /usr/local/share/bpftrace/tools /usr/local/share/bpftrace/tools
+COPY --from=builder /usr/local/share/bcc/tools /usr/local/share/bcc/tools
+COPY --from=builder /usr/local/lib/libbcc.a /usr/local/lib/libbcc.a
+COPY --from=builder /usr/local/lib/libbcc-loader-static.a /usr/local/lib/libbcc-loader-static.a
+COPY --from=builder /usr/local/lib/libbpf.a /usr/local/lib/libbpf.a

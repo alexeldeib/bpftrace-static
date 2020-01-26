@@ -2,6 +2,8 @@ ARG distro=xenial
 
 FROM ubuntu:${distro} as base
 
+ARG IMG
+ARG TAG
 ARG distro=xenial
 ARG bcc_ref="v0.12.0"
 ARG LLVM_VERSION="8"

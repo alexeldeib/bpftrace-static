@@ -11,7 +11,7 @@ env:
     DOCKER_USER: ${{ secrets.DOCKER_USER }}
     DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
     REPO: docker.io/alexeldeib
-    IMG_PREFIX: bpftrace-bin-
+    IMG_PREFIX: bpftrace-
 
 jobs:
     bpftrace:
@@ -28,8 +28,10 @@ jobs:
                 docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
                 TAG=$(date -Ihours | tr :+ -)
                 echo "TAG: ${TAG}"
-                docker build --build-arg distro=${{ matrix.distro }} --build-arg LLVM_VERSION=${{ matrix.llvm }} -t  ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} .
+                docker build --build-arg distro=${{ matrix.distro }} --build-arg LLVM_VERSION=${{ matrix.llvm }} -t ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} .
+                docker build -f Dockerfile.final --build-arg IMG=${REPO}/${IMG_PREFIX}bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }} --build-arg TAG=${TAG} -t ${REPO}/${IMG_PREFIX}bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} .
                 docker push ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
+                docker push ${REPO}/${IMG_PREFIX}bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
                 docker run -t --rm -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} cp /usr/local/bin/bpftrace ${GITHUB_WORKSPACE}/bpftrace
             - uses: actions/upload-artifact@v1
               with:
