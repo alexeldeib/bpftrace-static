@@ -1,0 +1,30 @@
+name: build images
+
+on:
+    push:
+        branches:
+            - master
+    schedule:
+        - cron: "0 4 * * *"
+
+env:
+    DOCKER_USER: ${{ secrets.DOCKER_USER }}
+    DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+
+jobs:
+    bpftrace:
+        runs-on: ubuntu-16.04
+        strategy:
+          matrix:
+            llvm: [8, 9]
+            distro: [xenial, bionic, eoan, focal]
+        steps:
+            - uses: actions/checkout@master
+            - name: build image
+              run: |
+                set -eux
+                docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+                TAG=$(date -Ihours | tr :+ -)
+                echo "TAG: ${TAG}"
+                docker build --build-arg distro=${{ matrix.distro }} --build-arg LLVM_VERSION=${{ matrix.llvm }} -t  ${DOCKER_USER}/bpftrace-bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
+                docker push ${DOCKER_USER}/bpftrace-bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
