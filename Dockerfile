@@ -76,7 +76,7 @@ RUN git clone https://github.com/iovisor/bpftrace.git \
     && make -j$(nproc) \
     && make install
 
-RUN strip --keep-symbol BEGIN_trigger
+RUN strip --keep-symbol BEGIN_trigger /usr/local/bin/bpftrace
 
 # at end of build, expect:
 # /usr/local/bin/bpftrace contains static binary
