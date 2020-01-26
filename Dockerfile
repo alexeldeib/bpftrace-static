@@ -2,8 +2,6 @@ ARG distro=xenial
 
 FROM ubuntu:${distro} as base
 
-ARG IMG
-ARG TAG
 ARG distro=xenial
 ARG bcc_ref="v0.12.0"
 ARG LLVM_VERSION="8"
@@ -41,7 +39,9 @@ RUN apt-get update && apt-get install -y \
     libllvm${LLVM_VERSION} \
     systemtap-sdt-dev \
     python3 \
-    quilt
+    quilt \
+    luajit \
+    luajit-5.1-dev
 
 RUN apt remove --purge --auto-remove cmake
 RUN apt install -y libssl-dev
@@ -58,12 +58,12 @@ RUN version=3.16 \
 
 RUN git clone https://github.com/iovisor/bcc.git \
     && mkdir bcc/build; cd bcc/build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DPYTHON_CMD=python3 .. \
     && make \
-    && make install  &&  mkdir -p /usr/local/lib && \
+    && make install &&  mkdir -p /usr/local/lib && \
     cp src/cc/libbcc.a /usr/local/lib/libbcc.a && \
     cp src/cc/libbcc-loader-static.a /usr/local/lib/libbcc-loader-static.a && \
-    cp ./src/cc/libbcc_bpf.a /usr/local/lib/libbpf.a
+    cp ./src/cc/libbcc_bpf.a /usr/local/lib/libbpf.a 
 
 RUN git clone https://github.com/iovisor/bpftrace.git \
     && mkdir bpftrace/build; cd bpftrace/build \
@@ -84,7 +84,4 @@ RUN strip --keep-symbol BEGIN_trigger /usr/local/bin/bpftrace
 # /usr/local/bin/bpftrace contains static binary
 # /usr/local/share/bpftrace/tools contains bpftrace shared programs
 # /usr/local/share/bcc/tools contains bcc shared programs
-# and some bcc lib*.a
-# /usr/local/lib/libbcc.a
-# /usr/local/lib/libbcc-loader-static.a
-# /usr/local/lib/libbpf.a
+# and some static bcc libs
