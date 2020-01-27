@@ -19,7 +19,7 @@ jobs:
         strategy:
           matrix:
             llvm: [8]
-            distro: [xenial]
+            distro: [xenial, bionic]
         steps:
             - uses: actions/checkout@master
             - name: build image
@@ -35,5 +35,5 @@ jobs:
                 docker run -t --rm -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} cp /usr/local/bin/bpftrace ${GITHUB_WORKSPACE}/bpftrace
             - uses: actions/upload-artifact@v1
               with:
-                name: ${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}
-                path: ${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}
+                name: bpftrace-${{ matrix.distro }}-llvm-${{ matrix.llvm }}
+                path: ${GITHUB_WORKSPACE}/bpftrace
