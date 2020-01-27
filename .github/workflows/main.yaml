@@ -19,7 +19,7 @@ jobs:
         strategy:
           matrix:
             llvm: [8]
-            distro: [xenial, bionic]
+            distro: [xenial]
         steps:
             - uses: actions/checkout@master
             - name: build image
