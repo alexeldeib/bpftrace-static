@@ -1,5 +1,5 @@
-ARG IMG
-ARG TAG
+ARG IMG=bpftrace-bin-xenial-llvm-8
+ARG TAG=2020-01-26T04-00-00
 
 FROM ${IMG}:${TAG} as builder
 
@@ -14,3 +14,17 @@ COPY --from=builder /usr/local/lib/libbcc* /usr/lib/
 COPY --from=builder /usr/local/lib/python2.7/dist-packages/bcc /usr/lib/python2.7/dist-packages/bcc
 
 RUN chmod +x /usr/local/bin/*.bt
+
+RUN apt install -y python3 python3-pip python3-virtualenv 
+
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m virtualenv --python=/usr/bin/python3 ${VIRTUAL_ENV}
+ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
+RUN pip install --upgrade pip setuptools
+RUN pip install magic-wormhole
+
+RUN apt install -y locales 
+RUN locale-gen en_US.UTF-8
+
+RUN apt install -y git
+RUN git clone https://github.com/brendangregg/FlameGraph
