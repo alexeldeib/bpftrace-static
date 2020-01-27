@@ -12,5 +12,4 @@ COPY --from=builder /usr/local/share/bpftrace/tools/ /usr/local/share/bpftrace/t
 COPY --from=builder /usr/local/share/bcc/tools/ /usr/local/bin/
 COPY --from=builder /usr/local/lib/libbcc* /usr/lib/
 COPY --from=builder /usr/local/lib/libbcc_bpf* /usr/lib/
-COPY --from=builder /usr/local/lib/libbcc_bpf* /usr/lib/
 COPY --from=builder /usr/local/lib/python2.7/dist-packages/bcc /usr/local/lib/python2.7/dist-packages/bcc
