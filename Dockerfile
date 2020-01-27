@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y \
     llvm-${LLVM_VERSION}-runtime \
     libllvm${LLVM_VERSION} \
     systemtap-sdt-dev \
-    python3 \
+    python \
     quilt \
     luajit \
     luajit-5.1-dev
@@ -58,7 +58,7 @@ RUN version=3.16 \
 
 RUN git clone https://github.com/iovisor/bcc.git \
     && mkdir bcc/build; cd bcc/build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DPYTHON_CMD=python3 .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. \
     && make \
     && make install &&  mkdir -p /usr/local/lib && \
     cp src/cc/libbcc.a /usr/local/lib/libbcc.a && \
