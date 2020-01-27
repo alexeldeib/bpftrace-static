@@ -76,7 +76,7 @@ RUN git clone https://github.com/iovisor/bpftrace.git \
     && make -j$(nproc) embedded_llvm \
     && make -j$(nproc) embedded_clang \
     && make -j$(nproc) \
-    && make install
+    && make -j$(nproc) install
 
 RUN strip --keep-symbol BEGIN_trigger /usr/local/bin/bpftrace
 

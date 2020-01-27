@@ -5,7 +5,7 @@ FROM ${IMG}:${TAG} as builder
 
 FROM ubuntu:xenial as final
 
-RUN apt update && apt install python -y
+RUN apt update && apt install python libelf-dev -y 
 
 COPY --from=builder /usr/local/bin/bpftrace /usr/local/bin/bpftrace
 COPY --from=builder /usr/local/share/bpftrace/tools/ /usr/local/bin/
