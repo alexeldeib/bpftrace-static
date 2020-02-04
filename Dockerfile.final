@@ -1,5 +1,5 @@
 ARG IMG=bpftrace-bin-xenial-llvm-8
-ARG TAG=2020-01-26T04-00-00
+ARG TAG
 
 FROM ${IMG}:${TAG} as builder
 
@@ -8,18 +8,18 @@ FROM ubuntu:xenial as final
 RUN apt update && apt install python libelf-dev -y 
 
 COPY --from=builder /usr/local/bin/bpftrace /usr/local/bin/bpftrace
-COPY --from=builder /usr/local/share/bpftrace/tools/ /usr/local/bin/
-COPY --from=builder /usr/local/share/bcc/tools/ /usr/local/bin/
+COPY --from=builder /usr/local/share/bpftrace/tools/ /usr/local/share/bpftrace/tools/
+COPY --from=builder /usr/local/share/bcc/tools/ /usr/local/share/bcc/tools/
 COPY --from=builder /usr/local/lib/libbcc* /usr/lib/
 COPY --from=builder /usr/local/lib/python2.7/dist-packages/bcc /usr/lib/python2.7/dist-packages/bcc
 
-RUN chmod +x /usr/local/bin/*.bt
+RUN chmod +x /usr/local/share/bpftrace/tools/*.bt
 
 RUN apt install -y python3 python3-pip python3-virtualenv 
 
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m virtualenv --python=/usr/bin/python3 ${VIRTUAL_ENV}
-ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
+ENV PATH "$PATH:/usr/local/share/bpftrace/tools:/usr/local/share/bcc/tools/:${VIRTUAL_ENV}/bin"
 RUN pip install --upgrade pip setuptools
 RUN pip install magic-wormhole
 
