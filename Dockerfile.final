@@ -13,7 +13,7 @@ COPY --from=builder /usr/local/share/bcc/tools/ /usr/local/share/bcc/tools/
 COPY --from=builder /usr/local/lib/libbcc* /usr/lib/
 COPY --from=builder /usr/local/lib/python2.7/dist-packages/bcc /usr/lib/python2.7/dist-packages/bcc
 
-RUN chmod +x /usr/local/share/bpftrace/tools/*.bt && chmod +x /usr/local/share/bcc/tools/*.py
+RUN chmod +x /usr/local/share/bpftrace/tools/*.bt
 
 RUN apt install -y python3 python3-pip python3-virtualenv 
 
