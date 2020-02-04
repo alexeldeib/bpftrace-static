@@ -32,9 +32,10 @@ jobs:
                 docker build -f Dockerfile.final --build-arg IMG=${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }} --build-arg TAG=${TAG} -t ${REPO}/${IMG_PREFIX}bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} .
                 docker push ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
                 docker tag ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:latest
+                docker push ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:latest
                 docker push ${REPO}/${IMG_PREFIX}bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
                 docker tag ${REPO}/${IMG_PREFIX}bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} ${REPO}/${IMG_PREFIX}bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:latest
-                docker push ${REPO}/${IMG_PREFIX}bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG}
+                docker push ${REPO}/${IMG_PREFIX}bin-${{ matrix.distro }}-llvm-${{ matrix.llvm }}:latest
                 docker run -t --rm -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} ${REPO}/${IMG_PREFIX}${{ matrix.distro }}-llvm-${{ matrix.llvm }}:${TAG} cp /usr/local/bin/bpftrace ${GITHUB_WORKSPACE}/bpftrace-${{ matrix.distro }}-llvm-${{ matrix.llvm }}
             - uses: actions/upload-artifact@v1
               with:
