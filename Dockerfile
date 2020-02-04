@@ -56,14 +56,22 @@ RUN version=3.16 \
     && make -j$(nproc) \
     && make install
 
-RUN git clone https://github.com/iovisor/bcc.git \
-    && mkdir bcc/build; cd bcc/build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. \
-    && make \
-    && make install &&  mkdir -p /usr/local/lib && \
-    cp src/cc/libbcc.a /usr/local/lib/libbcc.a && \
-    cp src/cc/libbcc-loader-static.a /usr/local/lib/libbcc-loader-static.a && \
-    cp ./src/cc/libbcc_bpf.a /usr/local/lib/libbpf.a 
+RUN export IOVISOR_KEY_TMP=/tmp/iovisor-release.key \
+    export IOVISOR_URL=https://repo.iovisor.org/GPG-KEY \
+    && curl -fsSL $IOVISOR_URL -o $IOVISOR_KEY_TMP \
+    && apt-key add $IOVISOR_KEY_TMP \
+    && echo "deb https://repo.iovisor.org/apt/$(lsb_release -cs) $(lsb_release -cs) main" >  /etc/apt/sources.list.d/iovisor.list \
+    && apt-get update \
+    && apt-get install bcc-tools libbcc-examples
+
+# RUN git clone https://github.com/iovisor/bcc.git \
+#     && mkdir bcc/build; cd bcc/build \
+#     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. \
+#     && make \
+#     && make install &&  mkdir -p /usr/local/lib && \
+#     cp src/cc/libbcc.a /usr/local/lib/libbcc.a && \
+#     cp src/cc/libbcc-loader-static.a /usr/local/lib/libbcc-loader-static.a && \
+#     cp ./src/cc/libbcc_bpf.a /usr/local/lib/libbpf.a 
 
 RUN git clone https://github.com/iovisor/bpftrace.git \
     && mkdir bpftrace/build; cd bpftrace/build \
