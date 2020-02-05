@@ -41,10 +41,11 @@ RUN apt-get update && apt-get install -y \
     python \
     quilt \
     luajit \
-    luajit-5.1-dev
+    luajit-5.1-dev \
+    apt-transport-https \
+    libssl-dev
 
 RUN apt remove --purge --auto-remove cmake
-RUN apt install -y libssl-dev
 RUN version=3.16 \
     && build=2 \
     && mkdir -p /tmp \
