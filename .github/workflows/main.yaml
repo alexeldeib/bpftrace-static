@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - master
+            - ace/repo
     schedule:
         - cron: "0 4 * * *"
 
