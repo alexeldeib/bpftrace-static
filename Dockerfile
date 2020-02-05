@@ -57,14 +57,6 @@ RUN version=3.16 \
     && make -j$(nproc) \
     && make install
 
-# RUN export IOVISOR_KEY_TMP=/tmp/iovisor-release.key \
-#     export IOVISOR_URL=https://repo.iovisor.org/GPG-KEY \
-#     && curl -fsSL $IOVISOR_URL -o $IOVISOR_KEY_TMP \
-#     && apt-key add $IOVISOR_KEY_TMP \
-#     && echo "deb [trusted=yes] https://repo.iovisor.org/apt/$(echo $(grep 'DISTRIB_CODENAME=[a-z]*' /etc/lsb-release -o) | cut -d= -f2) $(echo $(grep 'DISTRIB_CODENAME=[a-z]*' /etc/lsb-release -o) | cut -d= -f2)-nightly main" >  /etc/apt/sources.list.d/iovisor.list \
-#     && apt-get update \
-#     && apt-get -y install bcc-tools libbcc-examples
-
 RUN git clone https://github.com/iovisor/bcc.git \
     && mkdir bcc/build; cd bcc/build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. \
