@@ -1,0 +1,41 @@
+trigger: none 
+
+variables:
+  GOPATH: $(System.DefaultWorkingDirectory)/go
+  repo.path: $(GOPATH)/src/github.com/alexeldeib/bpftrace-static
+  output.dir: $(Build.ArtifactStagingDirectory)/release-tars
+  tag: $(checkout.branch)
+  GOFLAGS: "-mod=vendor"
+  
+stages:
+- stage: build
+  jobs:
+  - job: build_linux_amd64
+    pool: Upstream Pool
+    workspace:
+      clean: all
+    steps:
+    - script: echo "##vso[task.setvariable variable=PATH]${PATH}:~/go/bin"
+      displayName: append ~/go/bin to path var
+    - bash: |
+        docker build . -t bpftrace
+        docker run -v $(output.dir):/output bpftrace cp /usr/local/bin/bpftrace /output/bpftrace
+        docker run -v $(output.dir):/output bpftrace cp /usr/local/share/bpftrace/tools/ /output/tools/
+        tar -cf $(output.dir)/bpftrace-tools.tar $(output.dir)/tools/
+        rm -rf $(output.dir)/tools
+      workingDirectory: $(repo.path)
+      displayName: Build and save to $(output.dir)
+    - bash: 'scripts/build/upload-dir.sh'
+      displayName: Uploading client binaries to blob storage container - $(storage.container)
+      env:
+        PATTERN: "*/**"
+        STORAGE_CONTAINER: $(storage.container)
+        DESTINATION_PATH: $(tag)/binaries
+        SOURCE: $(output.dir)
+        AZURE_STORAGE_CONNECTION_STRING: $(storage.connection_string)
+    - task: PublishPipelineArtifact@1
+      displayName: Publish release
+      inputs:
+        artifactName: release
+        targetPath: $(Build.ArtifactStagingDirectory)
+    - template: templates/cleanup-repo.path.yml
