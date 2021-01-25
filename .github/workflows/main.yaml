@@ -20,8 +20,8 @@ jobs:
         runs-on: ubuntu-16.04
         strategy:
           matrix:
-            llvm: [8, 9, 10]
-            distro: [xenial, bionic, focal]
+            llvm: [10, 11]
+            distro: [xenial, bionic, disco, focal]
         steps:
             - uses: actions/checkout@master
             - name: build image
