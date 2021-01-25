@@ -8,7 +8,7 @@ ARG LLVM_VERSION="8"
 ENV DISTRO=${distro}
 ENV LLVM_VERSION=$LLVM_VERSION
 
-RUN apt-get update && apt-get install -y curl gnupg &&\
+RUN apt-get update && apt-get install -y apt-transport-https curl gnupg &&\
     llvmRepository="\n\
 deb http://apt.llvm.org/${DISTRO}/ llvm-toolchain-${DISTRO} main\n\
 deb-src http://apt.llvm.org/${DISTRO}/ llvm-toolchain-${DISTRO} main\n\
@@ -42,7 +42,6 @@ RUN apt-get update && apt-get install -y \
     quilt \
     luajit \
     luajit-5.1-dev \
-    apt-transport-https \
     libssl-dev
 
 RUN apt remove --purge --auto-remove cmake
