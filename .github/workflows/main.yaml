@@ -4,7 +4,7 @@ on:
     push:
         branches:
             - master
-            - ace/repo
+            - '**'
     schedule:
         - cron: "0 4 * * *"
     workflow_dispatch: {}
@@ -20,10 +20,10 @@ jobs:
         runs-on: ubuntu-16.04
         strategy:
           matrix:
-            llvm: [10, 11]
-            distro: [xenial, bionic, focal]
+            llvm: [15, 16]
+            distro: [bionic, focal, jammy]
         steps:
-            - uses: actions/checkout@master
+            - uses: actions/checkout@v3
             - name: build image
               run: |
                 set -eux

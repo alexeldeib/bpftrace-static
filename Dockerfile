@@ -1,10 +1,10 @@
-ARG distro=xenial
+ARG distro=jammy
 
 FROM ubuntu:${distro} as base
 
-ARG distro=xenial
-ARG bcc_ref="v0.12.0"
-ARG LLVM_VERSION="8"
+ARG distro=jammy
+# ARG bcc_ref="v0.12.0"
+ARG LLVM_VERSION="16"
 ENV DISTRO=${distro}
 ENV LLVM_VERSION=$LLVM_VERSION
 
@@ -38,11 +38,37 @@ RUN apt-get update && apt-get install -y \
     llvm-${LLVM_VERSION}-runtime \
     libllvm${LLVM_VERSION} \
     systemtap-sdt-dev \
-    python \
+    python3 \
     quilt \
     luajit \
     luajit-5.1-dev \
     libssl-dev
+
+# ENV LIBPCAP_VERSION 1.10.3
+# ENV TCPDUMP_VERSION 4.99.3
+
+# RUN mkdir -p /tmp/libnl \
+#     && cd /tmp/libnl \
+#     && git clone https://github.com/sabotage-linux/libnl-tiny.git . \
+#     && make ALL_LIBS=libnl-tiny.a CFLAGS=-static all
+
+# RUN mkdir -p /tmp/libcap \
+#     && cd /tmp/libcap \
+#     && curl -LO http://www.tcpdump.org/release/libpcap-${LIBPCAP_VERSION}.tar.gz \
+#     && tar xzvf libpcap-${LIBPCAP_VERSION}.tar.gz \
+#     && cd libpcap-${LIBPCAP_VERSION} \
+#     && CFLAGS='-I/tmp/libnl/libnl-tiny' \
+#         ./configure \
+#         --with-pcap=linux \
+#     && make
+
+# RUN mkdir -p /tmp/tcpdump \
+#     && curl -LO http://www.tcpdump.org/release/tcpdump-${TCPDUMP_VERSION}.tar.gz \
+#     && tar xzvf tcpdump-${TCPDUMP_VERSION}.tar.gz \
+#     && cd tcpdump-${TCPDUMP_VERSION} \
+#     && ./configure \
+#         --without-crypto \
+#     && make
 
 RUN apt remove --purge --auto-remove cmake
 RUN version=3.16 \
@@ -79,6 +105,10 @@ RUN git clone https://github.com/iovisor/bpftrace.git \
     && make -j$(nproc) install
 
 RUN strip --keep-symbol BEGIN_trigger /usr/local/bin/bpftrace
+
+RUN apt install -y git
+RUN git clone https://github.com/brendangregg/FlameGraph /flamegraph && chmod +x /flamegraph/*.pl
+RUN git clone https://github.com/brendangregg/HeatMap /heatmap && chmod +x /heatmap/*.pl
 
 # at end of build, expect:
 # /usr/local/bin/bpftrace contains static binary

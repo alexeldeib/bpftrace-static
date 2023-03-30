@@ -1,33 +1,41 @@
-ARG IMG=bpftrace-xenial-llvm-8
+ARG IMG=bpftrace-jammy-llvm-12
 ARG TAG
+
+FROM golang:1.20 as gobuild
+
+RUN GOBIN=/usr/local/bin go install github.com/schollz/croc/v9@latest
 
 FROM ${IMG}:${TAG} as builder
 
-FROM ubuntu:xenial as final
+# FROM amd64/busybox:uclibc as busybox
+# FROM gcr.io/distroless/cc:debug as final
+# COPY --from=busybox /bin/busybox /busybox/busybox
+# RUN ["/busybox/busybox", "--install", "/bin"]
 
-RUN apt update && apt install python libelf-dev -y 
+FROM ubuntu:jammy as final
 
+RUN apt-get update && apt-get install tcpdump python libelf-dev -y 
+
+COPY --from=gobuild /usr/local/bin/croc /usr/local/bin/croc
 COPY --from=builder /usr/local/bin/bpftrace /usr/local/bin/bpftrace
 COPY --from=builder /usr/local/share/bpftrace/tools/ /usr/local/share/bpftrace/tools/
-COPY --from=builder /usr/local/share/bcc/tools/ /usr/local/share/bcc/tools/
-COPY --from=builder /usr/local/lib/libbcc* /usr/lib/
-COPY --from=builder /usr/local/lib/python2.7/dist-packages/bcc /usr/lib/python2.7/dist-packages/bcc
+# COPY --from=builder /usr/local/share/bcc/tools/ /usr/local/share/bcc/tools/
+# COPY --from=builder /usr/local/lib/libbcc* /usr/lib/
+# COPY --from=builder /usr/local/lib/python2.7/dist-packages/bcc /usr/lib/python2.7/dist-packages/bcc
+COPY --from=builder /flamegraph /flamegraph
+COPY --from=builder /heatmap /heatmap
 
 RUN chmod +x /usr/local/share/bpftrace/tools/*.bt
 
-RUN apt install -y python3 python3-pip python3-virtualenv 
+# RUN apt install -y python3 python3-pip python3-virtualenv 
 
-ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m virtualenv --python=/usr/bin/python3 ${VIRTUAL_ENV}
+# ENV VIRTUAL_ENV=/opt/venv
+# RUN python3 -m virtualenv --python=/usr/bin/python3 ${VIRTUAL_ENV}
 ENV PATH "$PATH:/usr/local/share/bpftrace/tools:/usr/local/share/bcc/tools/:${VIRTUAL_ENV}/bin"
-RUN pip install --upgrade pip setuptools
-RUN pip install magic-wormhole
+# RUN pip install --upgrade pip setuptools
+# RUN pip install magic-wormhole
 
-RUN apt install -y locales 
-RUN locale-gen en_US.UTF-8
+# RUN apt install -y locales 
+# RUN locale-gen en_US.UTF-8
 
-RUN apt install -y git
-RUN git clone https://github.com/brendangregg/FlameGraph /flamegraph && chmod +x /flamegraph/*.pl
-RUN git clone https://github.com/brendangregg/HeatMap /heatmap && chmod +x /heatmap/*.pl
-
-ENV PATH "$PATH:/heatmap:/flamegraph"
+ENV PATH "$PATH:/usr/local/share/bpftrace/tools:/usr/local/share/bcc/tools/:/heatmap:/flamegraph"
